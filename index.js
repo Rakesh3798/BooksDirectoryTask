@@ -7,10 +7,13 @@ const path=require("path");
 const cookieparser=require("cookie-parser")
 const bodyparser=require("body-parser");
 const multer=require("multer");
-const PORT=9000;
-const url="mongodb://127.0.0.1:27017/BooksDirectory"
+const dotenv=require("dotenv")
+dotenv.config();
 
-mongoose.connect(url).then(()=>{
+const PORT=process.env.PORT;
+const URL=process.env.URL;
+
+mongoose.connect(URL).then(()=>{
     console.log("Db Connected");
 }).catch(err=>{
     console.log(err);
@@ -28,6 +31,6 @@ const bookrouter=require("./router/api");
 app.use("/books",bookrouter);
 
 app.listen(PORT,()=>{
-    console.log("Server running on port :"+PORT);
+    console.log(`Server running on port ${PORT}`);
 })
 // app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
