@@ -86,7 +86,7 @@ router.put("/", auth, async function (req, resp) {
 
     const bookExist = await bookModel.findOne({ _id: id });
 
-    //console.log(bookExist);
+
 
     if (!bookExist) {
         return resp.send("Book is a Exist");
