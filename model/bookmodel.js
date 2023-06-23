@@ -1,30 +1,30 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 const jwt = require('jsonwebtoken');
-const bcrypt=require("bcryptjs");
+const bcrypt = require("bcryptjs");
 
 
 
-const bookSchema= new mongoose.Schema({
-    bookName:{
-        type:String
+const bookSchema = new mongoose.Schema({
+    bookName: {
+        type: String
     },
-    autherName:{
-        type:String
+    autherName: {
+        type: String
     },
-    bookVersion:{
-        type:String
+    bookVersion: {
+        type: String
     },
-    price:{
-        type:Number
+    price: {
+        type: Number
     },
-    numberOfPages:{
-        type:Number
+    numberOfPages: {
+        type: Number
     },
-    image:{
-        type:String
+    image: {
+        type: String
     },
-    password:{
-        type:String
+    password: {
+        type: String
     },
     // Tokens:[{
     //     token:{
@@ -44,17 +44,17 @@ const bookSchema= new mongoose.Schema({
 //     }
 // }
 
-bookSchema.pre("save",async function(next){
+bookSchema.pre("save", async function (next) {
     try {
         if (this.isModified("password")) {
-            this.password=await bcrypt.hash(this.password,10);
-           // console.log(password);
+            this.password = await bcrypt.hash(this.password, 10);
+            // console.log(password);
             next();
-            }
+        }
 
     } catch (error) {
         console.log(error);
     }
 })
 
-module.exports=new mongoose.model("bookmodel",bookSchema);
+module.exports = new mongoose.model("bookmodel", bookSchema);
