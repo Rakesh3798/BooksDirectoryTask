@@ -17,7 +17,7 @@ router.post("/single", upload.single("image"), (req, res, next) => {
 router.post("/",upload.single("image"), async function (req, resp) {
    // console.log(req);
     const bookName = req.body.bookName;
-    const authorName = req.body.authorName;
+    const autherName = req.body.autherName;
     const bookVersion = req.body.bookVersion;
     const price = req.body.price;
     const numberOfPages = req.body.numberOfPages;
@@ -30,7 +30,7 @@ router.post("/",upload.single("image"), async function (req, resp) {
         return resp.send("Book already exists");
     }
     const data = await bookModel.create({
-        bookName,password,authorName,bookVersion,price,numberOfPages,image
+        bookName,autherName,bookVersion,price,numberOfPages,image,password
     });
     //const userId = req.user.id;
     resp.send({
@@ -138,7 +138,7 @@ router.put("/", auth, async function (req, resp) {
        }
  
        const {
-          bookName, password, autherName, bookVersion, price, numberOfPages, image
+          bookName,autherName, bookVersion, price, numberOfPages, image,password
        } = req.body;
  
        const updateField = (val, prev) => val ? val : prev;
@@ -152,7 +152,7 @@ router.put("/", auth, async function (req, resp) {
           image: updateField(image, bookExist.image),
           password: updateField(password, bookExist.password),
        };
-       console.log(updatedBook);
+       //console.log(updatedBook);
        await bookModel.updateOne(
           { _id: id },
           {
