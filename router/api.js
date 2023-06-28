@@ -10,7 +10,7 @@ router.post("/single", upload.single("image"), (req, res, next) => {
 });
 
 router.post("/", upload.single("image"),AddBook);
-router.get("/", auth,BookList);
+router.get("/token", auth,BookList);
 router.get("/search", auth, SearchBook);
 router.put("/", auth,UpdateBook);
 // router.put("/",auth,async function (req, resp) {

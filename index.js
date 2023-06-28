@@ -2,11 +2,9 @@ const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
 app.use(express.json());
-const fs = require("fs");
 const path = require("path");
 const cookieparser = require("cookie-parser")
 const bodyparser = require("body-parser");
-const multer = require("multer");
 const dotenv = require("dotenv")
 dotenv.config();
 

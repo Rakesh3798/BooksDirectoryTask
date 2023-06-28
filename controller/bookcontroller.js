@@ -1,9 +1,10 @@
 const bookModel = require("../model/bookmodel");
-const bcrypt=require("bcryptjs");
-const jwt=require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 
-const AddBook=async function (req, resp) {
+
+const AddBook = async function (req, resp) {
     // console.log(req);
     const bookName = req.body.bookName;
     const autherName = req.body.autherName;
@@ -28,7 +29,7 @@ const AddBook=async function (req, resp) {
     });
 }
 
-const BookList= async (req, resp) => {
+const BookList = async (req, resp) => {
     try {
         const bookList = await bookModel.find();
         // console.log(bookList);
@@ -39,7 +40,7 @@ const BookList= async (req, resp) => {
     }
 }
 
-const SearchBook=async function (req, resp) {
+const SearchBook = async function (req, resp) {
     //console.log(req.query);
     const { id, name } = req.query;
     let query = {};
@@ -60,17 +61,17 @@ const SearchBook=async function (req, resp) {
     resp.send(book);
 }
 
-const UpdateBook=async function (req, resp) {
+const UpdateBook = async function (req, resp) {
     //console.log(req);
     const id = req.query.id;
-    console.log(id);
+    // console.log(id);
     const {
         bookName, autherName, bookVersion, price, numberOfPages, image, password,
     } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
     const bookExist = await bookModel.findOne({ _id: id });
-
+    //console.log(bookExist);
 
 
     if (!bookExist) {
@@ -108,7 +109,7 @@ const UpdateBook=async function (req, resp) {
     }
 }
 
-const DeleteBook= async function (req, resp) {
+const DeleteBook = async function (req, resp) {
     const id = req.query.id;
     try {
         const bookExist = await bookModel.findOne({ _id: id });
@@ -119,15 +120,13 @@ const DeleteBook= async function (req, resp) {
         await bookModel.deleteOne({ _id: id });
         console.log("Data deleted");
         resp.send("Book Record Deleted Successfully");
-
-
     } catch (error) {
         console.log(error);
         resp.status(500).send("Failed to delete book record");
     }
 }
 
-const LoginBook= async (req, resp) => {
+const LoginBook = async (req, resp) => {
     try {
         const data = await bookModel.findOne({ bookName: req.body.bookName })
         if (!data) {
@@ -148,9 +147,7 @@ const LoginBook= async (req, resp) => {
     }
 }
 
-
-
-module.exports={
+module.exports = {
     AddBook,
     BookList,
     SearchBook,
