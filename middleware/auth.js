@@ -1,20 +1,16 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken"
 
-const auth = (req, resp, next) => {
-    //console.log(req);
+const authMiddleware = (req, resp, next) => {
     const token = req.query['auth-token'];
-    //console.log(token);
-
     try {
         const data = jwt.verify(token, "thisismytokenverificatinkey");
-        // console.log(data);
         req.uid = data._id;
         next();
     } catch (error) {
         resp.send("Invaild credentials");
     }
 }
-module.exports = auth;
+export default authMiddleware;
 
 
 

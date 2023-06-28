@@ -1,11 +1,8 @@
-const bookModel = require("../model/bookmodel");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import bookModel from '../model/book.js';
 
-
-
-const AddBook = async function (req, resp) {
-    // console.log(req);
+export const AddBook = async function (req, resp) {
     const bookName = req.body.bookName;
     const autherName = req.body.autherName;
     const bookVersion = req.body.bookVersion;
@@ -13,26 +10,22 @@ const AddBook = async function (req, resp) {
     const numberOfPages = req.body.numberOfPages;
     const image = req.file.filename;
     const password = req.body.password;
-
     const bookExist = await bookModel.findOne({ bookName: bookName });
-
     if (bookExist) {
         return resp.send("Book already exists");
     }
     const data = await bookModel.create({
         bookName, autherName, bookVersion, price, numberOfPages, image, password
     });
-    //const userId = req.user.id;
     resp.send({
         message: "Book Updated",
         data: data
     });
 }
 
-const BookList = async (req, resp) => {
+export const BookList = async (req, resp) => {
     try {
         const bookList = await bookModel.find();
-        // console.log(bookList);
         resp.send(bookList);
     } catch (error) {
         console.log(error);
@@ -40,43 +33,29 @@ const BookList = async (req, resp) => {
     }
 }
 
-const SearchBook = async function (req, resp) {
-    //console.log(req.query);
+export const SearchBook = async function (req, resp) {
     const { id, name } = req.query;
     let query = {};
-
     if (id) {
         query = { _id: id };
-        //console.log(query);
     } else if (name) {
         query = { bookName: name };
     }
-
     const book = await bookModel.findOne(query);
-
     if (!book) {
         return resp.send("Book Not Found");
     }
-
     resp.send(book);
 }
 
-const UpdateBook = async function (req, resp) {
-    //console.log(req);
+export const UpdateBook = async function (req, resp) {
     const id = req.query.id;
-    // console.log(id);
     const {
         bookName, autherName, bookVersion, price, numberOfPages, image, password,
     } = req.body;
-    // console.log(req.body);
-
     const bookExist = await bookModel.findOne({ _id: id });
-    //console.log(bookExist);
-
-
     if (!bookExist) {
         return resp.send("Book is a Exist");
-
     } else {
         const updateField = (val, prev) => !val ? prev : val;
         const updatedBook = {
@@ -89,8 +68,6 @@ const UpdateBook = async function (req, resp) {
             image: updateField(image, bookExist.image),
             password: updateField(password, bookExist.password),
         };
-        //console.log(updatedBook);
-
         await bookModel.updateOne(
             { _id: id },
             {
@@ -109,11 +86,10 @@ const UpdateBook = async function (req, resp) {
     }
 }
 
-const DeleteBook = async function (req, resp) {
+export const DeleteBook = async function (req, resp) {
     const id = req.query.id;
     try {
         const bookExist = await bookModel.findOne({ _id: id });
-        //console.log(bookExist);
         if (!bookExist) {
             return resp.send("Book Does Not Exist");
         }
@@ -126,7 +102,7 @@ const DeleteBook = async function (req, resp) {
     }
 }
 
-const LoginBook = async (req, resp) => {
+export const LoginBook = async (req, resp) => {
     try {
         const data = await bookModel.findOne({ bookName: req.body.bookName })
         if (!data) {
@@ -135,8 +111,7 @@ const LoginBook = async (req, resp) => {
             const valid = await bcrypt.compare(req.body.password, data.password);
             if (!valid) {
                 resp.send("Invaild bookName and password")
-
-            } else {
+                } else {
                 const token = await jwt.sign({ _id: data._id }, "thisismytokenverificatinkey");
                 console.log(token);
                 resp.send("auth-token : " + token)
@@ -145,13 +120,4 @@ const LoginBook = async (req, resp) => {
     } catch (error) {
         console.log(error);
     }
-}
-
-module.exports = {
-    AddBook,
-    BookList,
-    SearchBook,
-    UpdateBook,
-    DeleteBook,
-    LoginBook
 }

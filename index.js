@@ -1,11 +1,12 @@
-const mongoose = require("mongoose");
-const express = require("express");
+import mongoose from "mongoose";
+import express from "express";
 const app = express();
 app.use(express.json());
-const path = require("path");
-const cookieparser = require("cookie-parser")
-const bodyparser = require("body-parser");
-const dotenv = require("dotenv")
+import path from "path";
+import { fileURLToPath } from 'url';
+import cookieparser from "cookie-parser";
+import bodyparser from "body-parser";
+import dotenv from "dotenv";
 dotenv.config();
 
 const PORT = process.env.PORT;
@@ -20,15 +21,14 @@ mongoose.connect(URL).then(() => {
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(cookieparser());
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const publicPath = path.join(__dirname, "./public");
-//console.log(publicPath);
 app.use('/public', express.static(publicPath));
 
-
-const bookrouter = require("./router/api");
-app.use("/books", bookrouter);
+import apiRouter from './router/api.js';
+app.use("/", apiRouter);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
-// app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
