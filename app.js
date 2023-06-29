@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import express from "express";
 const app = express();
 app.use(express.json());
@@ -6,17 +5,10 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import cookieparser from "cookie-parser";
 import bodyparser from "body-parser";
+import {dbutil}  from "./util/dbutil.js";
 import dotenv from "dotenv";
 dotenv.config();
-
 const PORT = process.env.PORT;
-const URL = process.env.URL;
-
-mongoose.connect(URL).then(() => {
-    console.log("Db Connected");
-}).catch(err => {
-    console.log(err);
-})
 
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
