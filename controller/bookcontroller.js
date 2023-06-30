@@ -2,15 +2,20 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import bookModel from "../model/book.js";
 import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/profile')
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '_' + Date.now() +'.jpg')
+    cb(null, file.fieldname + '_' + Date.now() +'.jpg') 
   }
-})
+})   
 export const upload = multer({ storage: storage })
 
 export const AddBook = async function (req, resp) {
@@ -88,11 +93,13 @@ export const UpdateBook = async function (req, resp) {
                     bookVersion: updatedBook.bookVersion,
                     price: updatedBook.price,
                     numberOfPages: updatedBook.numberOfPages,
-                    image: updatedBook.image,
+                    image:req.file.filename,
                     password: updatedBook.password,
                 }
+                
             }
-        );
+            );
+        fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.image}`));
         resp.status(200).send("Book Updated");
     }
 }
@@ -105,6 +112,7 @@ export const DeleteBook = async function (req, resp) {
             return resp.send("Book Does Not Exist");
         }
         await bookModel.deleteOne({ _id: id });
+        fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.image}`));
         console.log("Data deleted");
         resp.send("Book Record Deleted Successfully");
     } catch (error) {
@@ -123,7 +131,7 @@ export const LoginBook = async (req, resp) => {
             if (!valid) {
                 resp.send("Invaild bookName and password")
                 } else {
-                const token = await jwt.sign({ _id: data._id }, "thisismytokenverificatinkey");
+                const token = await jwt.sign({ _id: data._id }, "SEY_KEY");
                 console.log(token);
                 resp.send("auth-token : " + token)
             }
