@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import bookModel from '../model/book.js';
+import bookModel from "../model/book.js";
 import multer from "multer";
 
 export const storage = multer.diskStorage({
@@ -8,7 +8,7 @@ export const storage = multer.diskStorage({
     cb(null, 'public/profile')
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '_' + Date.now() + '.jpg')
+    cb(null, file.fieldname + '_' + Date.now() +'.jpg')
   }
 })
 export const upload = multer({ storage: storage })
