@@ -13,7 +13,6 @@ export const storage = multer.diskStorage({
 })
 export const upload = multer({ storage: storage })
 
-
 export const AddBook = async function (req, resp) {
     const bookName = req.body.bookName;
     const autherName = req.body.autherName;

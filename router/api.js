@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import authMiddleware from '../middleware/auth.js';
-import {AddBook,BookList,SearchBook,UpdateBook,DeleteBook,LoginBook,upload} from "../controller/bookController.js";
+import { AddBook,BookList,SearchBook,UpdateBook,DeleteBook,LoginBook,upload } from '../controller/bookcontroller.js';
 
 router.post("/books/addbook", upload.single("image"),AddBook);
 router.get("/books/booklist", authMiddleware,BookList);
