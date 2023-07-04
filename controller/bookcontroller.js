@@ -5,6 +5,7 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { assert } from "console";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -24,7 +25,7 @@ export const AddBook = async function (req, resp) {
     const bookVersion = req.body.bookVersion;
     const price = req.body.price;
     const numberOfPages = req.body.numberOfPages;
-    const image = req.file.filename;
+    const image = req.file;
     const password = req.body.password;
     const bookExist = await bookModel.findOne({ bookName: bookName });
     if (bookExist) {
@@ -42,7 +43,7 @@ export const AddBook = async function (req, resp) {
 export const BookList = async (req, resp) => {
     try {
         const bookList = await bookModel.find();
-        resp.send(bookList);
+        resp.send(bookList);  
     } catch (error) {
         console.log(error);
         resp.status(500).send("Error retrieving book list");
