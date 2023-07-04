@@ -25,14 +25,15 @@ export const AddBook = async function (req, resp) {
     const bookVersion = req.body.bookVersion;
     const price = req.body.price;
     const numberOfPages = req.body.numberOfPages;
-    const image = req.file;
+    // const image = req.file.filename; // Single Upload image 
+    const images = req.files.map(file => file.filename); // multiple upload image
     const password = req.body.password;
     const bookExist = await bookModel.findOne({ bookName: bookName });
     if (bookExist) {
         return resp.send("Book already exists");
     }
     const data = await bookModel.create({
-        bookName, autherName, bookVersion, price, numberOfPages, image, password
+        bookName, autherName, bookVersion, price, numberOfPages, images, password
     });
     resp.send({
         message: "Book Updated",
@@ -68,7 +69,7 @@ export const SearchBook = async function (req, resp) {
 export const UpdateBook = async function (req, resp) {
     const id = req.query.id;
     const {
-        bookName, autherName, bookVersion, price, numberOfPages, image, password,
+        bookName, autherName, bookVersion, price, numberOfPages, images, password,
     } = req.body;
     const bookExist = await bookModel.findOne({ _id: id });
     if (!bookExist) {
@@ -82,7 +83,7 @@ export const UpdateBook = async function (req, resp) {
             bookVersion: updateField(bookVersion, bookExist.bookVersion),
             price: updateField(price, bookExist.price),
             numberOfPages: updateField(numberOfPages, bookExist.numberOfPages),
-            image: updateField(image, bookExist.image),
+            images: updateField(image, bookExist.images),
             password: updateField(password, bookExist.password),
         };
         await bookModel.updateOne(
@@ -94,13 +95,13 @@ export const UpdateBook = async function (req, resp) {
                     bookVersion: updatedBook.bookVersion,
                     price: updatedBook.price,
                     numberOfPages: updatedBook.numberOfPages,
-                    image:req.file.filename,
+                    images:req.file.filename,
                     password: updatedBook.password,
                 }
                 
             }
             );
-        fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.image}`));
+        fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.images}`));
         resp.status(200).send("Book Updated");
     }
 }
@@ -113,7 +114,7 @@ export const DeleteBook = async function (req, resp) {
             return resp.send("Book Does Not Exist");
         }
         await bookModel.deleteOne({ _id: id });
-        fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.image}`));
+        fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.images}`));
         console.log("Data deleted");
         resp.send("Book Record Deleted Successfully");
     } catch (error) {

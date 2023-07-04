@@ -22,9 +22,9 @@ const bookSchema = new mongoose.Schema({
         type: Number,
         require:true
     },
-    image: {
-        type: String,
-        require:true
+    images: {
+        type: [String],
+        required: true
     },
     password: {
         type: String,
