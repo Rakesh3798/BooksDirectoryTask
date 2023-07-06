@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { assert } from "console";
+import exp from "constants";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -24,8 +25,7 @@ export const AddBook = async function (req, resp) {
     const autherName = req.body.autherName;
     const bookVersion = req.body.bookVersion;
     const price = req.body.price;
-    const numberOfPages = req.body.numberOfPages;
-    // const image = req.file.filename; // Single Upload image 
+    const numberOfPages = req.body.numberOfPages; 
     const images = req.files.map(file => file.filename); // multiple upload image
     const password = req.body.password;
     const bookExist = await bookModel.findOne({ bookName: bookName });
@@ -83,7 +83,7 @@ export const UpdateBook = async function (req, resp) {
             bookVersion: updateField(bookVersion, bookExist.bookVersion),
             price: updateField(price, bookExist.price),
             numberOfPages: updateField(numberOfPages, bookExist.numberOfPages),
-            images: updateField(image, bookExist.images),
+            images: updateField(images, bookExist.images),
             password: updateField(password, bookExist.password),
         };
         await bookModel.updateOne(
@@ -95,12 +95,13 @@ export const UpdateBook = async function (req, resp) {
                     bookVersion: updatedBook.bookVersion,
                     price: updatedBook.price,
                     numberOfPages: updatedBook.numberOfPages,
-                    images:req.file.filename,
+                    //images:req.file.filename,
+                    images : req.files.map(file => file.filename), // multiple upload image
+
                     password: updatedBook.password,
                 }
                 
-            }
-            );
+            });
         fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.images}`));
         resp.status(200).send("Book Updated");
     }
@@ -114,9 +115,15 @@ export const DeleteBook = async function (req, resp) {
             return resp.send("Book Does Not Exist");
         }
         await bookModel.deleteOne({ _id: id });
-        fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.images}`));
+        const images = bookExist.images;
+        console.log("Images to be deleted:", images);
+        for (const imageName of images) {
+            const imagePath = path.join(__dirname, `../public/profile/${imageName}`);
+            console.log("Deleting file:", imagePath);
+            fs.unlinkSync(imagePath);
+        }
         console.log("Data deleted");
-        resp.send("Book Record Deleted Successfully");
+        resp.send("Book Record Deleted Successfully"); 
     } catch (error) {
         console.log(error);
         resp.status(500).send("Failed to delete book record");
