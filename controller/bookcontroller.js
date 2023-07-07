@@ -15,7 +15,7 @@ export const storage = multer.diskStorage({
     cb(null, 'public/profile')
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '_' + Date.now() +'.jpg') 
+    cb(null, file.fieldname + '_' +Math.floor((Math.random() * 10) + 1)+ Date.now() +'.jpg') 
   }
 })   
 export const upload = multer({ storage: storage })
@@ -30,6 +30,12 @@ export const AddBook = async function (req, resp) {
     const password = req.body.password;
     const bookExist = await bookModel.findOne({ bookName: bookName });
     if (bookExist) {
+        if (req.files) {
+            for (const imageName of req.files) {
+                const imagePath = path.join(__dirname, `../public/profile/${imageName.filename}`);
+                fs.unlinkSync(imagePath);
+            }
+        }
         return resp.send("Book already exists");
     }
     const data = await bookModel.create({
@@ -97,12 +103,17 @@ export const UpdateBook = async function (req, resp) {
                     numberOfPages: updatedBook.numberOfPages,
                     //images:req.file.filename,
                     images : req.files.map(file => file.filename), // multiple upload image
-
                     password: updatedBook.password,
                 }
                 
             });
-        fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.images}`));
+        //fs.unlinkSync(path.join(__dirname, `../public/profile/${bookExist.images}`));
+        if (req.files) {
+            for (const imageName of req.files) {
+                const imagePath = path.join(__dirname, `../public/profile/${imageName.filename}`);
+                fs.unlinkSync(imagePath);
+            }
+        }
         resp.status(200).send("Book Updated");
     }
 }
@@ -116,10 +127,8 @@ export const DeleteBook = async function (req, resp) {
         }
         await bookModel.deleteOne({ _id: id });
         const images = bookExist.images;
-        console.log("Images to be deleted:", images);
         for (const imageName of images) {
             const imagePath = path.join(__dirname, `../public/profile/${imageName}`);
-            console.log("Deleting file:", imagePath);
             fs.unlinkSync(imagePath);
         }
         console.log("Data deleted");
@@ -140,7 +149,7 @@ export const LoginBook = async (req, resp) => {
             if (!valid) {
                 resp.send("Invaild bookName and password")
                 } else {
-                const token = await jwt.sign({ _id: data._id }, "SEY_KEY");
+                const token = await jwt.sign({ _id: data._id }, "SEY_KEY", { expiresIn: '2h' });
                 console.log(token);
                 resp.send("auth-token : " + token)
             }
